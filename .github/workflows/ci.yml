@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        emacs-version: ['28.2', '29.4', '30.1']
+        emacs-version: ['29.4', '30.1', '31.1']
     steps:
       - uses: actions/checkout@v4
 
@@ -19,14 +19,15 @@ jobs:
         with:
           version: ${{ matrix.emacs-version }}
 
-      - name: Install org-lark from MELPA
+      - name: Install org-lark and shell-maker from MELPA
         run: |
           emacs --batch \
             --eval "(require 'package)" \
             --eval "(add-to-list 'package-archives '(\"melpa\" . \"https://melpa.org/packages/\"))" \
             --eval "(package-initialize)" \
             --eval "(package-refresh-contents)" \
-            --eval "(package-install 'org-lark)"
+            --eval "(package-install 'org-lark)" \
+            --eval "(package-install 'shell-maker)"
 
       - name: Byte-compile
         run: |
@@ -35,45 +36,45 @@ jobs:
             --eval "(package-initialize)" \
             --eval "(setq byte-compile-error-on-warn t)" \
             -f batch-byte-compile \
-            core/lark-core.el \
-            core/lark-auth.el \
-            core/lark-transient.el \
-            ui/lark-ui.el \
-            domain/lark-calendar.el \
-            domain/lark-tasks.el \
-            domain/lark-im.el \
-            domain/lark-mail.el \
-            domain/lark-docs.el \
-            domain/lark-drive.el \
-            domain/lark-sheets.el \
-            domain/lark-contact.el \
-            domain/lark-meetings.el \
-            domain/lark-whiteboard.el \
-            ai/lark-ai-skills.el \
-            ai/lark-ai-context.el \
-            ai/lark-ai-context-graph.el \
-            ai/lark-ai-agent.el \
-            ai/lark-ai.el \
-            lark.el
+            core/elark-core.el \
+            core/elark-auth.el \
+            core/elark-transient.el \
+            ui/elark-ui.el \
+            domain/elark-calendar.el \
+            domain/elark-tasks.el \
+            domain/elark-im.el \
+            domain/elark-mail.el \
+            domain/elark-docs.el \
+            domain/elark-drive.el \
+            domain/elark-sheets.el \
+            domain/elark-contact.el \
+            domain/elark-meetings.el \
+            domain/elark-whiteboard.el \
+            ai/elark-ai-skills.el \
+            ai/elark-ai-context.el \
+            ai/elark-ai-context-graph.el \
+            ai/elark-ai-agent.el \
+            ai/elark-ai.el \
+            elark.el
 
       - name: Run tests
         run: |
           emacs --batch -L . -L core -L ui -L domain -L ai -L test \
             --eval "(require 'package)" \
             --eval "(package-initialize)" \
-            -l lark-core-test \
-            -l lark-auth-test \
-            -l lark-ui-test \
-            -l lark-calendar-test \
-            -l lark-tasks-test \
-            -l lark-im-test \
-            -l lark-mail-test \
-            -l lark-docs-test \
-            -l lark-drive-test \
-            -l lark-sheets-test \
-            -l lark-contact-test \
-            -l lark-meetings-test \
-            -l lark-whiteboard-test \
-            -l lark-ai-test \
-            -l lark-ai-context-graph-test \
+            -l elark-core-test \
+            -l elark-auth-test \
+            -l elark-ui-test \
+            -l elark-calendar-test \
+            -l elark-tasks-test \
+            -l elark-im-test \
+            -l elark-mail-test \
+            -l elark-docs-test \
+            -l elark-drive-test \
+            -l elark-sheets-test \
+            -l elark-contact-test \
+            -l elark-meetings-test \
+            -l elark-whiteboard-test \
+            -l elark-ai-test \
+            -l elark-ai-context-graph-test \
             -f ert-run-tests-batch-and-exit
