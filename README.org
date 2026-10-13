@@ -1,5 +1,5 @@
-#+TITLE: lark.el — Emacs Interface to Lark/Feishu
-#+AUTHOR: lark.el contributors
+#+TITLE: elark — Emacs Interface to Lark/Feishu
+#+AUTHOR: elark contributors
 #+OPTIONS: toc:3
 
 An Emacs package that wraps [[https://github.com/larksuite/cli][lark-cli]] to bring Lark/Feishu into Emacs.
@@ -56,6 +56,8 @@ https://github.com/user-attachments/assets/77c2778d-4327-4c7b-a523-e89ab43f6aea
 - [[https://github.com/larksuite/cli][lark-cli]] installed and on your =PATH=
 - [[https://github.com/bbw9n/org-lark][org-lark]] (available on MELPA) — used by the Docs domain to convert
   Lark Markdown to Org
+- [[https://github.com/xenodium/shell-maker][shell-maker]] (available on MELPA, includes =markdown-overlays=) — the
+  AI shell interface
 
 ** Installing lark-cli
 
@@ -75,7 +77,7 @@ lark-cli --help
 
 #+begin_src emacs-lisp
 (straight-use-package
- '(lark :type git :host github :repo "bbw9n/lark.el"
+ '(elark :type git :host github :repo "bbw9n/elark"
         :files ("*.el" "core" "domain" "ai")))
 #+end_src
 
@@ -84,18 +86,18 @@ lark-cli --help
 Clone this repo and add it to your =load-path=:
 
 #+begin_src emacs-lisp
-(add-to-list 'load-path "/path/to/lark.el")
-(require 'lark)
-(lark-setup-prefix-key) ;; binds C-c l
+(add-to-list 'load-path "/path/to/elark")
+(require 'elark)
+(elark-setup-prefix-key) ;; binds C-c l
 #+end_src
 
 ** use-package
 
 #+begin_src emacs-lisp
-(use-package lark
-  :load-path "/path/to/lark.el"
+(use-package elark
+  :load-path "/path/to/elark"
   :config
-  (lark-setup-prefix-key))
+  (elark-setup-prefix-key))
 #+end_src
 
 ** Doom Emacs
@@ -103,17 +105,17 @@ Clone this repo and add it to your =load-path=:
 Add in packages.el from the source of github repo
 
 #+begin_src emacs-lisp
-(package! lark
-  :recipe (:host github :repo "bbw9n/lark.el" :branch "main"
+(package! elark
+  :recipe (:host github :repo "bbw9n/elark" :branch "main"
            :files ("*.el" "core" "domain" "ai")))
 #+end_src
 
-Ensure to setup =(lark-setup-prefix-key)= in your config.el
+Ensure to setup =(elark-setup-prefix-key)= in your config.el
 
 #+begin_src emacs-lisp
-(use-package! lark
+(use-package! elark
   :config
-  (lark-setup-prefix-key))
+  (elark-setup-prefix-key))
 #+end_src
 
 * Quick Start: First-Time Setup
@@ -123,7 +125,7 @@ and pulling up your calendar — all from within Emacs.
 
 ** Step 1: Configure lark-cli (one-time)
 
-Before lark.el can talk to Lark, you need to register an app.
+Before elark can talk to Lark, you need to register an app.
 Run this in your terminal (or use =M-x shell=):
 
 #+begin_src shell
@@ -161,7 +163,7 @@ terminal or from Emacs:
 *** Option A: From Emacs
 
 #+begin_src
-M-x lark-auth-login
+M-x elark-auth-login
 #+end_src
 
 Or use the keybinding: =C-c l l= then press =L= (Login).
@@ -199,7 +201,7 @@ lark-cli auth login --domain all
 From Emacs:
 
 #+begin_src
-M-x lark-auth-status
+M-x elark-auth-status
 #+end_src
 
 Or: =C-c l s=
@@ -221,7 +223,7 @@ Now the fun part:
 C-c l a
 #+end_src
 
-Or: =M-x lark-calendar-agenda=
+Or: =M-x elark-calendar-agenda=
 
 This fetches today's agenda and displays it in a =*Lark Agenda*= buffer:
 
@@ -249,15 +251,15 @@ Sprint Planning
 
 *** Keybindings in the agenda buffer
 
-| Key   | Action                          |
-|-------+---------------------------------|
-| =RET= | Open event detail               |
-| =g=   | Refresh (re-fetch from Lark)    |
-| =c=   | Create a new event              |
-| =d=   | Delete event at point           |
-| =y=   | Copy event ID to kill ring      |
-| =?=   | Open Calendar transient menu    |
-| =q=   | Quit buffer                     |
+| Key   | Action                       |
+|-------+------------------------------|
+| =RET= | Open event detail            |
+| =g=   | Refresh (re-fetch from Lark) |
+| =c=   | Create a new event           |
+| =d=   | Delete event at point        |
+| =y=   | Copy event ID to kill ring   |
+| =?=   | Open Calendar transient menu |
+| =q=   | Quit buffer                  |
 
 *** Open the full Calendar menu
 
@@ -266,7 +268,7 @@ C-c l l   (opens main dispatch)
 c         (opens Calendar submenu)
 #+end_src
 
-Or directly: =M-x lark-calendar-dispatch=
+Or directly: =M-x elark-calendar-dispatch=
 
 The Calendar transient menu:
 
@@ -289,33 +291,33 @@ Browse
 
 ** Global Keybindings (prefix =C-c l=)
 
-| Key       | Command                  | Description             |
-|-----------+--------------------------+-------------------------|
-| =C-c l l= | =lark-dispatch=          | Main transient menu     |
-| =C-c l a= | =lark-calendar-agenda=   | Today's agenda          |
-| =C-c l t= | =lark-tasks-list=        | My tasks                |
-| =C-c l m= | =lark-im-dispatch=       | Messenger menu          |
-| =C-c l e= | =lark-mail-inbox=        | Mail inbox              |
-| =C-c l d= | =lark-docs-dispatch=     | Docs menu               |
-| =C-c l f= | =lark-drive-list=        | Drive root listing      |
-| =C-c l k= | =lark-contacts-dispatch= | Contacts menu           |
-| =C-c l s= | =lark-auth-status=       | Auth status             |
-| =C-c l i= | =lark-ai-ask=            | Ask AI (natural language)|
-| =C-c l I= | =lark-ai-chat=           | AI chat buffer          |
-| =C-c l .= | =lark-ai-act=            | AI action at point      |
+| Key       | Command                   | Description               |
+|-----------+---------------------------+---------------------------|
+| =C-c l l= | =elark-dispatch=          | Main transient menu       |
+| =C-c l a= | =elark-calendar-agenda=   | Today's agenda            |
+| =C-c l t= | =elark-tasks-list=        | My tasks                  |
+| =C-c l m= | =elark-im-dispatch=       | Messenger menu            |
+| =C-c l e= | =elark-mail-inbox=        | Mail inbox                |
+| =C-c l d= | =elark-docs-dispatch=     | Docs menu                 |
+| =C-c l f= | =elark-drive-list=        | Drive root listing        |
+| =C-c l k= | =elark-contacts-dispatch= | Contacts menu             |
+| =C-c l s= | =elark-auth-status=       | Auth status               |
+| =C-c l i= | =elark-ai-ask=            | Ask AI (natural language) |
+| =C-c l I= | =elark-ai-chat=           | AI chat buffer            |
+| =C-c l .= | =elark-ai-act=            | AI action at point        |
 
 ** Main Dispatch (=C-c l l=)
 
 The main transient menu provides access to all 12 Lark domains:
 
-| Key | Domain     | Key | Domain     |
-|-----+------------+-----+------------|
-| =c= | Calendar   | =s= | Sheets     |
-| =m= | Messenger  | =e= | Mail       |
-| =d= | Docs       | =w= | Wiki       |
-| =f= | Drive      | =k= | Contacts   |
-| =b= | Base       | =v= | Meetings   |
-| =t= | Tasks      | =W= | Whiteboard |
+| Key | Domain    | Key | Domain     |
+|-----+-----------+-----+------------|
+| =c= | Calendar  | =s= | Sheets     |
+| =m= | Messenger | =e= | Mail       |
+| =d= | Docs      | =w= | Wiki       |
+| =f= | Drive     | =k= | Contacts   |
+| =b= | Base      | =v= | Meetings   |
+| =t= | Tasks     | =W= | Whiteboard |
 
 AI commands: =i= ask AI, =I= AI chat, =.= AI act at point.
 AI workflows: =1= standup report, =2= meeting summary, =3= schedule meeting.
@@ -323,112 +325,112 @@ Auth: =a= status, =L= login, =O= logout, =X= identity switch, =S= schema.
 
 ** Calendar
 
-| Command                          | Description                       |
-|----------------------------------+-----------------------------------|
-| =lark-calendar-agenda=           | Show today's agenda               |
-| =lark-calendar-events=           | List events (optional calendar ID) |
-| =lark-calendar-list=             | List all calendars                |
-| =lark-calendar-create-event=     | Create event (transient form)     |
-| =lark-calendar-freebusy=         | Check free/busy for a user        |
-| =lark-calendar-suggest-time=     | Get meeting time suggestions      |
-| =lark-calendar-rsvp=             | RSVP to an event                  |
+| Command                       | Description                        |
+|-------------------------------+------------------------------------|
+| =elark-calendar-agenda=       | Show today's agenda                |
+| =elark-calendar-events=       | List events (optional calendar ID) |
+| =elark-calendar-list=         | List all calendars                 |
+| =elark-calendar-create-event= | Create event (transient form)      |
+| =elark-calendar-freebusy=     | Check free/busy for a user         |
+| =elark-calendar-suggest-time= | Get meeting time suggestions       |
+| =elark-calendar-rsvp=         | RSVP to an event                   |
 
 ** Tasks
 
-| Command                    | Description                    |
-|----------------------------+--------------------------------|
-| =lark-tasks-list=          | List my tasks                  |
-| =lark-tasks-create=        | Create task (transient form)   |
-| =lark-tasks-open=          | Open task detail (at point)    |
-| =lark-tasks-complete=      | Mark task complete (at point)  |
-| =lark-tasks-edit=          | Edit task title (at point)     |
-| =lark-tasks-delete=        | Delete task (at point)         |
-| =lark-tasks-subtask-create= | Add subtask (at point)        |
-| =lark-tasks-tasklists=     | List task lists                |
+| Command                      | Description                   |
+|------------------------------+-------------------------------|
+| =elark-tasks-list=           | List my tasks                 |
+| =elark-tasks-create=         | Create task (transient form)  |
+| =elark-tasks-open=           | Open task detail (at point)   |
+| =elark-tasks-complete=       | Mark task complete (at point) |
+| =elark-tasks-edit=           | Edit task title (at point)    |
+| =elark-tasks-delete=         | Delete task (at point)        |
+| =elark-tasks-subtask-create= | Add subtask (at point)        |
+| =elark-tasks-tasklists=      | List task lists               |
 
 ** Messenger
 
-| Command                  | Description                        |
-|--------------------------+------------------------------------|
-| =lark-im-chats=          | List chats                         |
-| =lark-im-messages=       | Show message history for a chat    |
-| =lark-im-send=           | Send a message                     |
-| =lark-im-reply=          | Reply to a message                 |
-| =lark-im-react=          | Add reaction to a message          |
-| =lark-im-search=         | Search messages                    |
-| =lark-im-group-create=   | Create group chat (transient form) |
-| =lark-im-subscribe=      | Start real-time event subscription |
-| =lark-im-unsubscribe=    | Stop event subscription            |
+| Command                 | Description                        |
+|-------------------------+------------------------------------|
+| =elark-im-chats=        | List chats                         |
+| =elark-im-messages=     | Show message history for a chat    |
+| =elark-im-send=         | Send a message                     |
+| =elark-im-reply=        | Reply to a message                 |
+| =elark-im-react=        | Add reaction to a message          |
+| =elark-im-search=       | Search messages                    |
+| =elark-im-group-create= | Create group chat (transient form) |
+| =elark-im-subscribe=    | Start real-time event subscription |
+| =elark-im-unsubscribe=  | Stop event subscription            |
 
 ** Mail
 
 mu4e-style interface with flag indicators and shr-rendered HTML bodies.
 
-| Command                | Description                      |
-|------------------------+----------------------------------|
-| =lark-mail-inbox=      | Show inbox                       |
-| =lark-mail-read=       | Read mail (at point)             |
-| =lark-mail-compose=    | Compose new mail (transient form)|
-| =lark-mail-reply=      | Reply to mail                    |
-| =lark-mail-forward=    | Forward mail                     |
-| =lark-mail-delete=     | Delete mail (at point)           |
-| =lark-mail-search=     | Search mail                      |
-| =lark-mail-drafts=     | List drafts                      |
+| Command              | Description                       |
+|----------------------+-----------------------------------|
+| =elark-mail-inbox=   | Show inbox                        |
+| =elark-mail-read=    | Read mail (at point)              |
+| =elark-mail-compose= | Compose new mail (transient form) |
+| =elark-mail-reply=   | Reply to mail                     |
+| =elark-mail-forward= | Forward mail                      |
+| =elark-mail-delete=  | Delete mail (at point)            |
+| =elark-mail-search=  | Search mail                       |
+| =elark-mail-drafts=  | List drafts                       |
 
 Keybindings in the mail list:
 
-| Key   | Action                |
-|-------+-----------------------|
-| =RET= | Read message          |
-| =c=   | Compose new mail      |
-| =r=   | Reply                 |
-| =f=   | Forward               |
-| =d=   | Delete                |
-| =/=   | Search                |
-| =n=   | Next message          |
-| =p=   | Previous message      |
-| =g=   | Refresh               |
+| Key   | Action           |
+|-------+------------------|
+| =RET= | Read message     |
+| =c=   | Compose new mail |
+| =r=   | Reply            |
+| =f=   | Forward          |
+| =d=   | Delete           |
+| =/=   | Search           |
+| =n=   | Next message     |
+| =p=   | Previous message |
+| =g=   | Refresh          |
 
 ** Docs
 
-| Command                  | Description                          |
-|--------------------------+--------------------------------------|
-| =lark-docs-search=       | Search documents                     |
-| =lark-docs-fetch=        | Fetch document content (URL or token)|
-| =lark-docs-create=       | Create document (transient form)     |
-| =lark-docs-update=       | Update document (transient form)     |
-| =lark-docs-media-download= | Download media from a document     |
-| =lark-docs-media-insert=   | Insert media into a document       |
-| =lark-docs-media-preview=  | Preview media                      |
+| Command                     | Description                           |
+|-----------------------------+---------------------------------------|
+| =elark-docs-search=         | Search documents                      |
+| =elark-docs-fetch=          | Fetch document content (URL or token) |
+| =elark-docs-create=         | Create document (transient form)      |
+| =elark-docs-update=         | Update document (transient form)      |
+| =elark-docs-media-download= | Download media from a document        |
+| =elark-docs-media-insert=   | Insert media into a document          |
+| =elark-docs-media-preview=  | Preview media                         |
 
 ** Drive
 
 Dired-like file browser for Lark Drive. Owner names are resolved from
 contact open_ids automatically.
 
-| Command                | Description                    |
-|------------------------+--------------------------------|
-| =lark-drive-list=       | List root (or folder by token) |
-| =lark-drive-open=       | Open item at point (RET)       |
-| =lark-drive-view-content= | View doc/docx/sheet content (=v=) |
-| =lark-drive-upload=     | Upload local file              |
-| =lark-drive-download=   | Download file at point         |
-| =lark-drive-mkdir=      | Create folder (=+=)            |
-| =lark-drive-copy=       | Copy file (=C=)                |
-| =lark-drive-move=       | Move/rename file (=R=)         |
-| =lark-drive-import=     | Import local file to Drive     |
-| =lark-drive-export=     | Export cloud doc to local      |
+| Command                    | Description                       |
+|----------------------------+-----------------------------------|
+| =elark-drive-list=         | List root (or folder by token)    |
+| =elark-drive-open=         | Open item at point (RET)          |
+| =elark-drive-view-content= | View doc/docx/sheet content (=v=) |
+| =elark-drive-upload=       | Upload local file                 |
+| =elark-drive-download=     | Download file at point            |
+| =elark-drive-mkdir=        | Create folder (=+=)               |
+| =elark-drive-copy=         | Copy file (=C=)                   |
+| =elark-drive-move=         | Move/rename file (=R=)            |
+| =elark-drive-import=       | Import local file to Drive        |
+| =elark-drive-export=       | Export cloud doc to local         |
 
 Keybindings in the drive buffer:
 
-| Key   | Action                         |
-|-------+--------------------------------|
+| Key   | Action                                   |
+|-------+------------------------------------------|
 | =RET= | Open (descend into folder / show detail) |
-| =v=   | View doc/docx/sheet content    |
-| =^=   | Go up to parent folder         |
-| =w=   | Copy file token                |
-| =W=   | Copy file URL                  |
-| =n/p= | Next/previous file             |
+| =v=   | View doc/docx/sheet content              |
+| =^=   | Go up to parent folder                   |
+| =w=   | Copy file token                          |
+| =W=   | Copy file URL                            |
+| =n/p= | Next/previous file                       |
 
 In the file detail buffer, press =RET= to view the content of
 doc/docx/sheet files directly.
@@ -437,44 +439,44 @@ doc/docx/sheet files directly.
 
 Spreadsheet data is displayed as editable org-mode tables.
 
-| Command                   | Description                       |
-|---------------------------+-----------------------------------|
-| =lark-sheets-info=         | Show spreadsheet info             |
-| =lark-sheets-read=         | Read range as org table           |
-| =lark-sheets-write-table=  | Write org table back to sheet     |
-| =lark-sheets-append-table= | Append rows from org table        |
-| =lark-sheets-create=       | Create spreadsheet (transient)    |
-| =lark-sheets-create-from-table= | Create from org table at point |
-| =lark-sheets-find=         | Find cells by text                |
-| =lark-sheets-export=       | Export as xlsx/csv                |
+| Command                          | Description                    |
+|----------------------------------+--------------------------------|
+| =elark-sheets-info=              | Show spreadsheet info          |
+| =elark-sheets-read=              | Read range as org table        |
+| =elark-sheets-write-table=       | Write org table back to sheet  |
+| =elark-sheets-append-table=      | Append rows from org table     |
+| =elark-sheets-create=            | Create spreadsheet (transient) |
+| =elark-sheets-create-from-table= | Create from org table at point |
+| =elark-sheets-find=              | Find cells by text             |
+| =elark-sheets-export=            | Export as xlsx/csv             |
 
 In the sheet info buffer, press =RET= on a sheet line to read the first
 100 rows as an org table.
 
 ** Contacts
 
-| Command                     | Description                   |
-|-----------------------------+-------------------------------|
-| =lark-contact-get-user=      | Look up user by ID            |
-| =lark-contact-search=        | Search contacts by keyword    |
-| =lark-contact-resolve-name=  | Resolve open_id to name (cached) |
+| Command                      | Description                      |
+|------------------------------+----------------------------------|
+| =elark-contact-get-user=     | Look up user by ID               |
+| =elark-contact-search=       | Search contacts by keyword       |
+| =elark-contact-resolve-name= | Resolve open_id to name (cached) |
 
 ** Meetings
 
-| Command                     | Description                       |
-|-----------------------------+-----------------------------------|
-| =lark-meetings-search=       | Search meeting records            |
-| =lark-meetings-open=         | Open meeting detail (auto-fetches recording) |
-| =lark-meetings-notes=        | Fetch meeting notes (summary, todos, chapters) |
-| =lark-meetings-recording=    | Query recording for a meeting     |
-| =lark-meetings-download-recording= | Download recording by minute token |
+| Command                             | Description                                    |
+|-------------------------------------+------------------------------------------------|
+| =elark-meetings-search=             | Search meeting records                         |
+| =elark-meetings-open=               | Open meeting detail (auto-fetches recording)   |
+| =elark-meetings-notes=              | Fetch meeting notes (summary, todos, chapters) |
+| =elark-meetings-recording=          | Query recording for a meeting                  |
+| =elark-meetings-download-recording= | Download recording by minute token             |
 
 Meeting detail pages automatically check for recordings and show a
 clickable download link when available.
 
 * AI Layer
 
-lark.el includes an AI-native orchestration layer that turns natural-language
+elark includes an AI-native orchestration layer that turns natural-language
 prompts into multi-step lark-cli execution plans.  Instead of remembering
 which commands to chain together, you describe what you want and the AI
 figures out the steps.
@@ -482,13 +484,13 @@ figures out the steps.
 ** How it works
 
 1. You type a prompt (e.g., "what's on my plate today?")
-2. lark.el selects the relevant lark-cli skill files (=SKILL.md=) based on
+2. elark selects the relevant lark-cli skill files (=SKILL.md=) based on
    keywords in your prompt
 3. The skills + your prompt are sent to an LLM, which returns a JSON
    execution plan
 4. The plan is shown in a review buffer — you can inspect, remove steps,
    or cancel
-5. On confirmation, lark.el executes the CLI commands (in parallel where
+5. On confirmation, elark executes the CLI commands (in parallel where
    possible), collecting results
 6. If the plan includes a synthesis step, results are sent back to the LLM
    for a human-readable summary
@@ -522,21 +524,21 @@ npm install -g @zed-industries/claude-code-acp   # Claude Code adapter
 #+end_src
 
 #+begin_src emacs-lisp
-;; Nothing to configure: `lark-ai-backend' defaults to `acp' and the
+;; Nothing to configure: `elark-ai-backend' defaults to `acp' and the
 ;; default agent is claude-code-acp.
 
 ;; To use Gemini CLI instead:
-(setq lark-ai-acp-command "gemini"
-      lark-ai-acp-command-params '("--experimental-acp")
+(setq elark-ai-acp-command "gemini"
+      elark-ai-acp-command-params '("--experimental-acp")
       ;; Gemini ignores the session _meta systemPrompt extension, so
-      ;; send lark's system prompt inline with the user message:
-      lark-ai-acp-system-prompt-placement 'inline)
+      ;; send elark's system prompt inline with the user message:
+      elark-ai-acp-system-prompt-placement 'inline)
 #+end_src
 
 The agent process is started on first use and kept alive;
-=M-x lark-ai-acp-shutdown= kills it.  Each LLM call runs in a fresh
+=M-x elark-ai-acp-shutdown= kills it.  Each LLM call runs in a fresh
 ACP session, and the agent's own tools are disabled — it acts purely
-as the text engine behind lark's agent loop.
+as the text engine behind elark's agent loop.
 
 *** With gptel
 
@@ -546,26 +548,26 @@ as the text engine behind lark's agent loop.
   ;; configure your preferred provider
   (setq gptel-model 'claude-sonnet-4-20250514))
 
-(setq lark-ai-backend 'gptel)
+(setq elark-ai-backend 'gptel)
 #+end_src
 
 *** With a raw HTTP endpoint
 
 #+begin_src emacs-lisp
-(setq lark-ai-backend 'http
-      lark-ai-http-endpoint "https://api.openai.com/v1/chat/completions"
-      lark-ai-http-api-key "sk-...")
+(setq elark-ai-backend 'http
+      elark-ai-http-endpoint "https://api.openai.com/v1/chat/completions"
+      elark-ai-http-api-key "sk-...")
 #+end_src
 
-Or set the =LARK_AI_API_KEY= environment variable instead of hardcoding the key.
+Or set the =ELARK_AI_API_KEY= environment variable instead of hardcoding the key.
 
 ** Keybindings
 
-| Key       | Command                          | Description                  |
-|-----------+----------------------------------+------------------------------|
-| =C-c l i= | =lark-ai-ask=                    | Natural-language prompt      |
-| =C-c l I= | =lark-ai-chat=                   | Conversational AI buffer     |
-| =C-c l .= | =lark-ai-act=                    | Context-aware action at point|
+| Key       | Command         | Description                   |
+|-----------+-----------------+-------------------------------|
+| =C-c l i= | =elark-ai-ask=  | Natural-language prompt       |
+| =C-c l I= | =elark-ai-chat= | Conversational AI buffer      |
+| =C-c l .= | =elark-ai-act=  | Context-aware action at point |
 
 These are also available from the main dispatch (=C-c l l=) under the
 "AI" and "AI Workflows" sections.
@@ -615,7 +617,7 @@ synthesizes results into:
 - Free slots: 10:00-14:00, 15:00-18:00
 #+end_example
 
-Or use the dedicated command: =M-x lark-ai-workflow-standup=.
+Or use the dedicated command: =M-x elark-ai-workflow-standup=.
 
 *** Meeting summary
 
@@ -626,7 +628,7 @@ C-c l i  "summarise my meetings this week"
 The AI chains =vc +search= -> =vc +notes= -> synthesis, producing a
 structured report of all meetings with their notes and action items.
 
-Or: =M-x lark-ai-workflow-meeting-summary=.
+Or: =M-x elark-ai-workflow-meeting-summary=.
 
 *** Schedule a meeting
 
@@ -646,7 +648,7 @@ The AI plan:
 Step 3 is marked as a side-effect and will prompt for confirmation
 before executing.
 
-Or: =M-x lark-ai-workflow-schedule=.
+Or: =M-x elark-ai-workflow-schedule=.
 
 *** Context-aware actions
 
@@ -678,42 +680,42 @@ AI: You have 3 meetings tomorrow:
 
 ** Built-in workflows
 
-| Command                             | Description                      |
-|-------------------------------------+----------------------------------|
-| =lark-ai-workflow-standup=          | Today's agenda + open tasks      |
-| =lark-ai-workflow-meeting-summary=  | Summarise recent meetings        |
-| =lark-ai-workflow-schedule=         | Schedule a meeting with AI help  |
+| Command                             | Description                     |
+|-------------------------------------+---------------------------------|
+| =elark-ai-workflow-standup=         | Today's agenda + open tasks     |
+| =elark-ai-workflow-meeting-summary= | Summarise recent meetings       |
+| =elark-ai-workflow-schedule=        | Schedule a meeting with AI help |
 
 These are shortcuts for common multi-step operations.  They also appear
 in the dispatch menu under "AI Workflows" (keys =1=, =2=, =3=).
 
 * Customization
 
-All options are under =M-x customize-group RET lark=.
+All options are under =M-x customize-group RET elark=.
 
-| Variable                    | Default        | Description                           |
-|-----------------------------+----------------+---------------------------------------|
-| =lark-cli-executable=      | ="lark-cli"=   | Path to the lark-cli binary           |
-| =lark-default-format=      | ="json"=       | Output format (json/table/csv/pretty) |
-| =lark-default-identity=    | ="user"=       | Identity type (user/bot)              |
-| =lark-dry-run=             | =nil=          | Pass --dry-run to destructive commands |
-| =lark-im-message-limit=    | =50=           | Messages to fetch in chat history     |
-| =lark-mail-page-size=      | =20=           | Emails per page                       |
-| =lark-calendar-default-days= | =1=          | Days in agenda view                   |
-| =lark-ai-backend=          | =acp=          | LLM backend (=acp=, =gptel=, or =http=) |
-| =lark-ai-model=            | =nil=          | Model ID (nil uses backend default)   |
-| =lark-ai-skills-directory= | =~/.agents/skills/= | Path to lark-cli SKILL.md files |
-| =lark-ai-skill-routing=    | =llm=          | Skill picker: =llm= (ask the model) or =keyword= |
-| =lark-ai-skills-log-lines=  | =10=          | Top N lines of each skill shown in the debug log (nil = full) |
-| =lark-ai-step-timeout=     | =1800=         | Seconds before a plan step's CLI call is killed (nil = none) |
-| =lark-ai-execute-mode=     | =confirm-writes= | Plan execution: =auto= / =confirm-writes= / =review= |
-| =lark-ai-auto-execute-commands= | =("docs +create" "docs +update")= | Write cmds that skip the confirm prompt |
-| =lark-ai-http-endpoint=    | =nil=          | URL for the =http= backend            |
-| =lark-ai-http-api-key=     | =nil=          | API key (or set =LARK_AI_API_KEY=)    |
-| =lark-ai-acp-command=      | ="claude-code-acp"= | ACP agent binary for the =acp= backend |
-| =lark-ai-acp-command-params= | =nil=        | Extra args for the ACP agent (e.g. =--experimental-acp=) |
-| =lark-ai-acp-cwd=          | ="~"=          | Working directory for ACP sessions   |
-| =lark-ai-acp-system-prompt-placement= | =session= | System prompt via session meta (=session=) or inline text (=inline=) |
+| Variable                               | Default                           | Description                                                          |
+|----------------------------------------+-----------------------------------+----------------------------------------------------------------------|
+| =elark-cli-executable=                 | ="lark-cli"=                      | Path to the lark-cli binary                                          |
+| =elark-default-format=                 | ="json"=                          | Output format (json/table/csv/pretty)                                |
+| =elark-default-identity=               | ="user"=                          | Identity type (user/bot)                                             |
+| =elark-dry-run=                        | =nil=                             | Pass --dry-run to destructive commands                               |
+| =elark-im-message-limit=               | =50=                              | Messages to fetch in chat history                                    |
+| =elark-mail-page-size=                 | =20=                              | Emails per page                                                      |
+| =elark-calendar-default-days=          | =1=                               | Days in agenda view                                                  |
+| =elark-ai-backend=                     | =acp=                             | LLM backend (=acp=, =gptel=, or =http=)                              |
+| =elark-ai-model=                       | =nil=                             | Model ID (nil uses backend default)                                  |
+| =elark-ai-skills-directory=            | =~/.agents/skills/=               | Path to lark-cli SKILL.md files                                      |
+| =elark-ai-skill-routing=               | =llm=                             | Skill picker: =llm= (ask the model) or =keyword=                     |
+| =elark-ai-skills-log-lines=            | =10=                              | Top N lines of each skill shown in the debug log (nil = full)        |
+| =elark-ai-step-timeout=                | =1800=                            | Seconds before a plan step's CLI call is killed (nil = none)         |
+| =elark-ai-execute-mode=                | =confirm-writes=                  | Plan execution: =auto= / =confirm-writes= / =review=                 |
+| =elark-ai-auto-execute-commands=       | =("docs +create" "docs +update")= | Write cmds that skip the confirm prompt                              |
+| =elark-ai-http-endpoint=               | =nil=                             | URL for the =http= backend                                           |
+| =elark-ai-http-api-key=                | =nil=                             | API key (or set =ELARK_AI_API_KEY=)                                  |
+| =elark-ai-acp-command=                 | ="claude-code-acp"=               | ACP agent binary for the =acp= backend                               |
+| =elark-ai-acp-command-params=          | =nil=                             | Extra args for the ACP agent (e.g. =--experimental-acp=)             |
+| =elark-ai-acp-cwd=                     | ="~"=                             | Working directory for ACP sessions                                   |
+| =elark-ai-acp-system-prompt-placement= | =session=                         | System prompt via session meta (=session=) or inline text (=inline=) |
 
 * Troubleshooting
 
@@ -722,11 +724,11 @@ All options are under =M-x customize-group RET lark=.
 lark-cli is not on your =PATH=. Either:
 
 - Install it: =npm install -g @larksuite/cli=
-- Set the full path: =(setq lark-cli-executable "/path/to/lark-cli")=
+- Set the full path: =(setq elark-cli-executable "/path/to/lark-cli")=
 
 ** "Lark: not authenticated"
 
-Run =M-x lark-auth-login= or authenticate from terminal:
+Run =M-x elark-auth-login= or authenticate from terminal:
 
 #+begin_src shell
 lark-cli auth login --domain all
@@ -737,7 +739,7 @@ lark-cli auth login --domain all
 1. Check you have calendar scopes: =lark-cli auth check --scope calendar:readonly=
 2. Try from terminal first: =lark-cli calendar +agenda=
 3. If the terminal works but Emacs doesn't, enable debug logging:
-   =(setq lark--debug t)= and check the =*lark-log*= buffer
+   =(setq elark--debug t)= and check the =*elark-log*= buffer
 
 ** Permission errors
 
@@ -752,60 +754,60 @@ lark-cli auth login --domain calendar,task
 Enable debug logging to see all CLI invocations:
 
 #+begin_src emacs-lisp
-(setq lark--debug t)
+(setq elark--debug t)
 #+end_src
 
-Then check =*lark-log*= buffer (=C-x b *lark-log*=) to see every command
-that lark.el runs, including arguments and exit codes.
+Then check =*elark-log*= buffer (=C-x b *elark-log*=) to see every command
+that elark runs, including arguments and exit codes.
 
 * Architecture
 
 #+begin_example
-lark.el                         Entry point, defgroup, prefix keymap, load-path setup
+elark.el                         Entry point, defgroup, prefix keymap, load-path setup
 
 core/
-  lark-core.el                  Process management, JSON parsing, CLI debug line stripping
-  lark-auth.el                  OAuth device-code login, status, identity switching
-  lark-transient.el             Top-level transient dispatch menu
+  elark-core.el                  Process management, JSON parsing, CLI debug line stripping
+  elark-auth.el                  OAuth device-code login, status, identity switching
+  elark-transient.el             Top-level transient dispatch menu
 
 ui/
-  lark-ui.el                    Shared presentation helpers (loading spinner)
+  elark-ui.el                    Shared presentation helpers (loading spinner)
 
 domain/
-  lark-calendar.el              Calendar: agenda, events, create, free/busy, RSVP
-  lark-tasks.el                 Tasks: list, create, complete, subtasks, tasklists
-  lark-im.el                    Messenger: chats, messages, send, reply, events
-  lark-mail.el                  Mail: mu4e-style inbox, shr HTML rendering, compose
-  lark-docs.el                  Docs: search, fetch, create, update, media operations
-  lark-drive.el                 Drive: dired-like browser, upload/download, owner names
-  lark-sheets.el                Sheets: org-table read/write, create, find, export
-  lark-contact.el               Contacts: user lookup, search, name resolution cache
-  lark-meetings.el              Meetings: search, notes, recording with download links
-  lark-whiteboard.el            Whiteboard: create and update whiteboards
+  elark-calendar.el              Calendar: agenda, events, create, free/busy, RSVP
+  elark-tasks.el                 Tasks: list, create, complete, subtasks, tasklists
+  elark-im.el                    Messenger: chats, messages, send, reply, events
+  elark-mail.el                  Mail: mu4e-style inbox, shr HTML rendering, compose
+  elark-docs.el                  Docs: search, fetch, create, update, media operations
+  elark-drive.el                 Drive: dired-like browser, upload/download, owner names
+  elark-sheets.el                Sheets: org-table read/write, create, find, export
+  elark-contact.el               Contacts: user lookup, search, name resolution cache
+  elark-meetings.el              Meetings: search, notes, recording with download links
+  elark-whiteboard.el            Whiteboard: create and update whiteboards
 
 ai/
-  lark-ai.el                    AI: prompt -> plan -> execute -> synthesize -> present
-  lark-ai-skills.el             AI: skill registry, loader, system prompt assembly
-  lark-ai-context.el            AI: buffer context extraction for all domain modes
-  lark-ai-llm.el                AI: LLM backend dispatch (gptel / acp / http)
-  lark-ai-acp.el                AI: ACP agent backend (Claude Code, Gemini CLI, ... via acp.el)
+  elark-ai.el                    AI: prompt -> plan -> execute -> synthesize -> present
+  elark-ai-skills.el             AI: skill registry, loader, system prompt assembly
+  elark-ai-context.el            AI: buffer context extraction for all domain modes
+  elark-ai-llm.el                AI: LLM backend dispatch (gptel / acp / http)
+  elark-ai-acp.el                AI: ACP agent backend (Claude Code, Gemini CLI, ... via acp.el)
 
 test/
-  lark-*-test.el                ERT tests for each module
+  elark-*-test.el                ERT tests for each module
 
 demo/
-  lark-native-ui-demo.el        Runnable magit-section / tabulated-list UI preview
-  lark-*.mp4                    Domain screen-recording sources (hosted copies
+  elark-native-ui-demo.el        Runnable magit-section / tabulated-list UI preview
+  elark-*.mp4                    Domain screen-recording sources (hosted copies
                                 are embedded in the Demos section)
 #+end_example
 
-All CLI calls funnel through =lark--run-command= (async) or
-=lark--run-command-sync=.  Output is =--format json= by default, parsed
+All CLI calls funnel through =elark--run-command= (async) or
+=elark--run-command-sync=.  Output is =--format json= by default, parsed
 with =json-parse-string=.  CLI debug lines (=[cmd +sub]= prefixes and
 =tip= lines) are automatically stripped before JSON parsing.
 
-=lark.el= automatically adds =core/=, =ui/=, =domain/=, and =ai/= to the
-=load-path= at load time, so a single =(add-to-list 'load-path "/path/to/lark.el")=
+=elark.el= automatically adds =core/=, =ui/=, =domain/=, and =ai/= to the
+=load-path= at load time, so a single =(add-to-list 'load-path "/path/to/elark")=
 is sufficient.
 
 * License
