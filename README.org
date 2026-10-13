@@ -52,7 +52,7 @@ https://github.com/user-attachments/assets/77c2778d-4327-4c7b-a523-e89ab43f6aea
 
 * Prerequisites
 
-- Emacs 28.1+ (for built-in =transient=)
+- Emacs 29.1+
 - [[https://github.com/larksuite/cli][lark-cli]] installed and on your =PATH=
 - [[https://github.com/bbw9n/org-lark][org-lark]] (available on MELPA) — used by the Docs domain to convert
   Lark Markdown to Org

@@ -7,7 +7,7 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;; URL: https://github.com/bbw9n/elark
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "28.1") (org-lark "0.2") (shell-maker "0.97.5"))
+;; Package-Requires: ((emacs "29.1") (org-lark "0.2") (shell-maker "0.97.5"))
 ;; Keywords: comm, tools, agent
 
 ;; This file is free software; you can redistribute it and/or modify
@@ -48,7 +48,7 @@
 ;;
 ;; Prerequisites:
 ;;   - lark-cli installed and on PATH (https://github.com/larksuite/cli)
-;;   - Emacs 28.1+ (for built-in transient)
+;;   - Emacs 29.1+
 ;;
 ;; Dependencies:
 ;;   - org-lark (https://github.com/bbw9n/org-lark) — Org rendering and

@@ -1017,7 +1017,8 @@ content values don't flood the tool-call card."
 Both the gatherer and the streaming LLM call are stubbed; we verify
 the wiring: the user turn appears, the synthesised text lands in
 conversation history, and an editable input area follows."
-  (let ((gathered nil)
+  (let ((elark-ai-interface 'classic) ; the shell path has its own test
+        (gathered nil)
         (synth-user-msg nil))
     (cl-letf*
         (((symbol-function 'elark-ai-context-graph-gather)
