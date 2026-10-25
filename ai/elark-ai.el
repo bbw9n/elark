@@ -197,7 +197,7 @@ Self-stops once the session phase is no longer `loading' or `executing'
 
 ;;; Session lifecycle commands
 
-(declare-function gptel-abort "gptel" (&optional buf))
+(declare-function gptel-abort "ext:gptel" (&optional buf))
 
 ;;;###autoload
 (defun elark-ai-abort ()

@@ -2,6 +2,8 @@
 #+AUTHOR: elark contributors
 #+OPTIONS: toc:3
 
+[[https://melpa.org/#/elark][file:https://melpa.org/packages/elark-badge.svg]]
+
 An Emacs package that wraps [[https://github.com/larksuite/cli][lark-cli]] to bring Lark/Feishu into Emacs.
 Transient menus for command dispatch, mu4e-style mail, dired-like drive
 browsing, org-table spreadsheets, and async execution throughout.

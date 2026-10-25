@@ -447,7 +447,9 @@ Otherwise raw markdown is shown."
          (message "Lark: document created%s%s"
                   (if token (format " (token: %s)" token) "")
                   (if (and url (not (string-empty-p url)))
-                      (format " — %s" url) "")))))))
+                      (format " — %s" url) ""))
+         (when token
+           (elark-docs-fetch-as-org token)))))))
 
 ;;;; Update
 ;; CLI: docs +update --doc X --markdown X --mode X [--new-title X]

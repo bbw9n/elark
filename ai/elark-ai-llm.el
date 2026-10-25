@@ -45,7 +45,7 @@
 (require 'elark-ai-ui)       ; `elark-ai-ui-append-fragment'
 
 ;; gptel forward declarations
-(declare-function gptel-request "gptel")
+(declare-function gptel-request "ext:gptel")
 (defvar gptel-model)
 (defvar gptel-backend)
 (defvar gptel-log-level)
